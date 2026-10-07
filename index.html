@@ -277,7 +277,7 @@ nav.tabs button[aria-selected="true"]::after{content:"";display:block;height:2px
         <select id="f-marque" class="sel" aria-label="Marque"></select>
         <select id="f-saison" class="sel" aria-label="Saison"></select>
         <select id="sort" class="sel" aria-label="Tri">
-          <option value="recent">Ajout récent</option><option value="saison-desc">Saison ↓</option><option value="saison-asc">Saison ↑</option><option value="serie-asc">N° de série ↑</option><option value="serie-desc">N° de série ↓</option><option value="club">Club A→Z</option><option value="prix-desc">Prix ↓</option>
+          <option value="serie-asc" selected>N° de série ↑</option><option value="serie-desc">N° de série ↓</option><option value="recent">Ajout récent</option><option value="saison-desc">Saison ↓</option><option value="saison-asc">Saison ↑</option><option value="club">Club A→Z</option><option value="prix-desc">Prix ↓</option>
         </select>
       </div>
     </div>
@@ -425,7 +425,7 @@ const DB = {
 /* ---------- état ---------- */
 let items = [], view = [], cur = 0, editing = null;
 const urls = new Map();
-const F = {q:'', fav:false, type:'', club:'', marque:'', saison:'', sort:'recent'};
+const F = {q:'', fav:false, type:'', club:'', marque:'', saison:'', sort:'serie-asc'};
 const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const yearOf = s => { const m = String(s||'').match(/(18|19|20)\d\d/); return m ? +m[0] : null; };
 const eur = n => (n||0).toLocaleString('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0});
