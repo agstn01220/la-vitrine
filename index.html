@@ -74,7 +74,7 @@ header.top{display:flex;align-items:center;justify-content:space-between;gap:12p
 .hanger{position:relative;aspect-ratio:4/5;background:#fff;display:grid;place-items:center;padding:6px}
 .hanger img{width:100%;height:100%;object-fit:contain}
 .hanger .hint{color:#6b7380}
-.meta{padding:10px 12px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.meta{position:relative;padding:10px 12px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
 .meta .club{font:800 18px/1.05 var(--f-display);text-transform:uppercase;letter-spacing:.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .meta .sub{font:600 13px var(--f-num);color:var(--muted);letter-spacing:.05em;text-transform:uppercase;display:flex;gap:6px;flex-wrap:wrap}
 .num{position:absolute;right:10px;bottom:10px;font:900 30px/1 var(--f-display);color:var(--fg);opacity:.9;text-shadow:0 2px 8px rgba(0,0,0,.6)}
@@ -83,7 +83,7 @@ header.top{display:flex;align-items:center;justify-content:space-between;gap:12p
 .tl{position:absolute;top:8px;left:8px;right:46px;display:flex;flex-wrap:wrap;gap:4px;align-items:center;z-index:1}
 .tag{font:700 11px var(--f-num);letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:rgba(0,0,0,.85);color:#c9d0da}
 .tag.ex{color:var(--gold)}
-.serial{position:absolute;top:50%;left:0;transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl;font:700 12px var(--f-num);letter-spacing:.08em;padding:8px 4px;border-radius:4px 0 0 4px;background:rgba(0,0,0,.85);color:var(--gold);box-shadow:0 0 0 1px rgba(214,175,80,.45)}
+.serial{align-self:flex-start;margin-top:6px;font:700 13px var(--f-num);letter-spacing:.06em;padding:2px 7px;border-radius:4px;background:rgba(0,0,0,.85);color:var(--gold);box-shadow:0 0 0 1px rgba(214,175,80,.45)}
 .empty{text-align:center;padding:60px 16px;color:var(--muted)}
 .empty h2{font:900 30px var(--f-display);color:var(--fg);text-transform:uppercase;margin:0 0 8px}
 /* boutons */
@@ -493,10 +493,10 @@ function applyFilters(){
 }
 const cardHTML=(it,i)=>`<div class="card" role="button" tabindex="0" data-i="${i}">
     <div class="hanger"><div class="tl">${it.example?'<span class="tag ex">Exemple</span>':(it.type?`<span class="tag">${esc(it.type)}</span>`:'')}${(()=>{ const b=[it.signe&&'Signé',(it.version==='Porté'||it.version==='Préparé')&&it.version].filter(Boolean); return b.length?`<div class="badges">${b.map(x=>`<span>${x}</span>`).join('')}</div>`:''; })()}</div>
-      ${it.front?`<img src="${url(it,'front')}" alt="${esc(it.club)}" loading="lazy">`:'<span class="hint">Pas de photo</span>'}${it.serie?`<span class="serial">N° ${esc(it.serie)}</span>`:''}
+      ${it.front?`<img src="${url(it,'front')}" alt="${esc(it.club)}" loading="lazy">`:'<span class="hint">Pas de photo</span>'}
 </div>
     <button class="fav${it.fav?' on':''}" data-fav="${it.id}" aria-label="Favori">★</button>
-    <div class="meta"><span class="club">${esc(it.club)}</span>${it.version?`<span class="sub">${esc(it.version)}</span>`:''}<span class="sub"><span>${esc(it.saison||'—')}</span>${it.joueur?`<span>· ${esc(it.joueur)}</span>`:''}</span></div></div>`;
+    <div class="meta"><span class="club">${esc(it.club)}</span>${it.version?`<span class="sub">${esc(it.version)}</span>`:''}<span class="sub"><span>${esc(it.saison||'—')}</span>${it.joueur?`<span>· ${esc(it.joueur)}</span>`:''}</span>${it.serie?`<span class="serial">N° ${esc(it.serie)}</span>`:''}</div></div>`;
 function render(){
   $('#cnt').textContent=items.length;
   fillSelect($('#f-club'),'Tous clubs',items.map(i=>i.club),F.club);
