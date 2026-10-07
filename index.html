@@ -18,7 +18,6 @@
 <meta name="apple-mobile-web-app-title" content="La Vitrine">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
@@ -221,9 +220,9 @@ nav.tabs button[aria-selected="true"]::after{content:"";display:block;height:2px
 .thumbs button{width:44px;height:55px;border-radius:6px;border:1px solid var(--line);background:#fff;padding:0;overflow:hidden}
 .thumbs img{width:100%;height:100%;object-fit:contain}
 .fab svg{filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
-.flag{display:inline-grid;place-items:center;width:30px;height:21px;border-radius:4px;overflow:hidden;vertical-align:middle;flex:0 0 auto;background:var(--panel-2);box-shadow:0 0 0 1px rgba(255,255,255,.12);line-height:1}
-.flag i{font-family:"Noto Color Emoji","Apple Color Emoji","Segoe UI Emoji",sans-serif;font-style:normal;font-size:28px;line-height:1}
-.flag.lg{width:44px;height:31px}.flag.lg i{font-size:41px}
+.flag{display:inline-block;width:30px;height:22px;border-radius:3px;overflow:hidden;vertical-align:middle;flex:0 0 auto;background:var(--panel-2);box-shadow:0 0 0 1px rgba(255,255,255,.12);line-height:1}
+.flag img{display:block;width:100%;height:100%;object-fit:cover}
+.flag.lg{width:44px;height:33px}
 .kpi b.pv.pos{background:none;-webkit-text-fill-color:#4fbf8b;color:#4fbf8b;animation:none}
 .kpi b.pv.neg{background:none;-webkit-text-fill-color:var(--red);color:var(--red);animation:none}
 .seg{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px;margin-bottom:14px}
@@ -607,16 +606,15 @@ document.addEventListener('keydown',e=>{
 });
 
 /* ---------- drapeaux ---------- */
-const COUNTRIES={'France':'FR','Allemagne':'DE','Angleterre':'ENG','Écosse':'SCT','Pays de Galles':'WLS','Irlande du Nord':'GB','Royaume-Uni':'GB','Irlande':'IE','Espagne':'ES','Italie':'IT','Portugal':'PT','Pays-Bas':'NL','Belgique':'BE','Suisse':'CH','Autriche':'AT','Danemark':'DK','Suède':'SE','Norvège':'NO','Finlande':'FI','Islande':'IS','Pologne':'PL','Tchéquie':'CZ','Slovaquie':'SK','Slovénie':'SI','Croatie':'HR','Serbie':'RS','Bosnie-Herzégovine':'BA','Monténégro':'ME','Macédoine du Nord':'MK','Albanie':'AL','Grèce':'GR','Chypre':'CY','Turquie':'TR','Bulgarie':'BG','Roumanie':'RO','Hongrie':'HU','Ukraine':'UA','Russie':'RU','Géorgie':'GE','Luxembourg':'LU','Monaco':'MC','Israël':'IL','Brésil':'BR','Argentine':'AR','Uruguay':'UY','Paraguay':'PY','Chili':'CL','Colombie':'CO','Pérou':'PE','Équateur':'EC','Venezuela':'VE','Mexique':'MX','États-Unis':'US','Canada':'CA','Costa Rica':'CR','Jamaïque':'JM','Honduras':'HN','Salvador':'SV','Guatemala':'GT','Japon':'JP','Corée du Sud':'KR','Chine':'CN','Taïwan':'TW','Australie':'AU','Nouvelle-Zélande':'NZ','Arabie saoudite':'SA','Qatar':'QA','Émirats arabes unis':'AE','Iran':'IR','Jordanie':'JO','Inde':'IN','Pakistan':'PK','Bangladesh':'BD','Sri Lanka':'LK','Vietnam':'VN','Thaïlande':'TH','Cambodge':'KH','Philippines':'PH','Malaisie':'MY','Indonésie':'ID','Maroc':'MA','Algérie':'DZ','Tunisie':'TN','Égypte':'EG','Sénégal':'SN','Cameroun':'CM',"Côte d'Ivoire":'CI','Nigeria':'NG','Ghana':'GH','Mali':'ML','Afrique du Sud':'ZA','RD Congo':'CD'};
+const COUNTRIES={'France':'FR','Allemagne':'DE','Angleterre':'ENG','Écosse':'SCT','Pays de Galles':'WLS','Irlande du Nord':'NIR','Royaume-Uni':'GB','Irlande':'IE','Espagne':'ES','Italie':'IT','Portugal':'PT','Pays-Bas':'NL','Belgique':'BE','Suisse':'CH','Autriche':'AT','Danemark':'DK','Suède':'SE','Norvège':'NO','Finlande':'FI','Islande':'IS','Pologne':'PL','Tchéquie':'CZ','Slovaquie':'SK','Slovénie':'SI','Croatie':'HR','Serbie':'RS','Bosnie-Herzégovine':'BA','Monténégro':'ME','Macédoine du Nord':'MK','Albanie':'AL','Grèce':'GR','Chypre':'CY','Turquie':'TR','Bulgarie':'BG','Roumanie':'RO','Hongrie':'HU','Ukraine':'UA','Russie':'RU','Géorgie':'GE','Luxembourg':'LU','Monaco':'MC','Israël':'IL','Brésil':'BR','Argentine':'AR','Uruguay':'UY','Paraguay':'PY','Chili':'CL','Colombie':'CO','Pérou':'PE','Équateur':'EC','Venezuela':'VE','Mexique':'MX','États-Unis':'US','Canada':'CA','Costa Rica':'CR','Jamaïque':'JM','Honduras':'HN','Salvador':'SV','Guatemala':'GT','Japon':'JP','Corée du Sud':'KR','Chine':'CN','Taïwan':'TW','Australie':'AU','Nouvelle-Zélande':'NZ','Arabie saoudite':'SA','Qatar':'QA','Émirats arabes unis':'AE','Iran':'IR','Jordanie':'JO','Inde':'IN','Pakistan':'PK','Bangladesh':'BD','Sri Lanka':'LK','Vietnam':'VN','Thaïlande':'TH','Cambodge':'KH','Philippines':'PH','Malaisie':'MY','Indonésie':'ID','Maroc':'MA','Algérie':'DZ','Tunisie':'TN','Égypte':'EG','Sénégal':'SN','Cameroun':'CM',"Côte d'Ivoire":'CI','Nigeria':'NG','Ghana':'GH','Mali':'ML','Afrique du Sud':'ZA','RD Congo':'CD'};
 const COUNTRY_NAMES=Object.keys(COUNTRIES).sort((a,b)=>a.localeCompare(b,'fr'));
 const norm=t=>String(t||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
 const CN=Object.fromEntries(Object.entries(COUNTRIES).map(([k,v])=>[norm(k),v]));
-function flagEmoji(name){
-  const c=CN[norm(name)]; if(!c) return '🏳️';
-  if(c.length===3){ const sub={ENG:'gbeng',SCT:'gbsct',WLS:'gbwls'}[c]; return '🏴'+[...sub].map(ch=>String.fromCodePoint(0xE0000+ch.charCodeAt(0))).join('')+String.fromCodePoint(0xE007F); }
-  return [...c].map(ch=>String.fromCodePoint(0x1F1E6+ch.charCodeAt(0)-65)).join('');
+function flagCode(name){
+  const c=CN[norm(name)]; if(!c) return '';
+  return ({ENG:'gb-eng',SCT:'gb-sct',WLS:'gb-wls',NIR:'gb-nir'})[c]||c.toLowerCase();
 }
-const flagHTML=(name,lg)=>`<span class="flag${lg?' lg':''}" title="${esc(name)}"><i>${flagEmoji(name)}</i></span>`;
+const flagHTML=(name,lg)=>{ const c=flagCode(name); return `<span class="flag${lg?' lg':''}" title="${esc(name)}">${c?`<img src="flags/${c}.svg" alt="" loading="lazy">`:''}</span>`; };
 
 /* ---------- vue clubs / pays ---------- */
 let CV={mode:'pays', club:null, country:null}; try{ CV.mode=LS.get('vx_cmode')||'pays'; }catch(e){}
