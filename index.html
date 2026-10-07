@@ -82,6 +82,7 @@ header.top{display:flex;align-items:center;justify-content:space-between;gap:12p
 .tl{position:absolute;top:8px;left:8px;right:46px;display:flex;flex-wrap:wrap;gap:4px;align-items:center;z-index:1}
 .tag{font:700 11px var(--f-num);letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:rgba(0,0,0,.85);color:#c9d0da}
 .tag.ex{color:var(--gold)}
+.serial{position:absolute;bottom:8px;left:8px;font:700 12px var(--f-num);letter-spacing:.08em;padding:3px 8px;border-radius:4px;background:rgba(0,0,0,.85);color:var(--gold);box-shadow:0 0 0 1px rgba(214,175,80,.45)}
 .empty{text-align:center;padding:60px 16px;color:var(--muted)}
 .empty h2{font:900 30px var(--f-display);color:var(--fg);text-transform:uppercase;margin:0 0 8px}
 /* boutons */
@@ -275,7 +276,7 @@ nav.tabs button[aria-selected="true"]::after{content:"";display:block;height:2px
         <select id="f-marque" class="sel" aria-label="Marque"></select>
         <select id="f-saison" class="sel" aria-label="Saison"></select>
         <select id="sort" class="sel" aria-label="Tri">
-          <option value="recent">Ajout récent</option><option value="saison-desc">Saison ↓</option><option value="saison-asc">Saison ↑</option><option value="club">Club A→Z</option><option value="prix-desc">Prix ↓</option>
+          <option value="recent">Ajout récent</option><option value="saison-desc">Saison ↓</option><option value="saison-asc">Saison ↑</option><option value="serie-asc">N° de série ↑</option><option value="serie-desc">N° de série ↓</option><option value="club">Club A→Z</option><option value="prix-desc">Prix ↓</option>
         </select>
       </div>
     </div>
@@ -486,11 +487,12 @@ function applyFilters(){
   view = items.filter(it=>(!F.fav||it.fav)&&(!F.type||it.type===F.type)&&(!F.club||it.club===F.club)&&(!F.marque||it.marque===F.marque)&&(!F.saison||it.saison===F.saison)
     &&(!q||[it.club,it.pays,it.joueur,it.saison,it.numero,it.provenance,it.version,it.marque,it.code,it.serie,it.desc,it.fab].join(' ').toLowerCase().includes(q)));
   const s=F.sort;
-  view.sort((a,b)=> s==='club'?a.club.localeCompare(b.club,'fr') : s==='prix-desc'?(b.prix||0)-(a.prix||0) : s==='saison-desc'?(yearOf(b.saison)||0)-(yearOf(a.saison)||0) : s==='saison-asc'?(yearOf(a.saison)||9999)-(yearOf(b.saison)||9999) : b.createdAt-a.createdAt);
+  const sc=(a,b,d)=>{ const x=String(a.serie||'').trim(), y=String(b.serie||'').trim(); if(!x&&!y) return b.createdAt-a.createdAt; if(!x) return 1; if(!y) return -1; return d*x.localeCompare(y,'fr',{numeric:true}); };
+  view.sort((a,b)=> s==='serie-asc'?sc(a,b,1) : s==='serie-desc'?sc(a,b,-1) : s==='club'?a.club.localeCompare(b.club,'fr') : s==='prix-desc'?(b.prix||0)-(a.prix||0) : s==='saison-desc'?(yearOf(b.saison)||0)-(yearOf(a.saison)||0) : s==='saison-asc'?(yearOf(a.saison)||9999)-(yearOf(b.saison)||9999) : b.createdAt-a.createdAt);
 }
 const cardHTML=(it,i)=>`<div class="card" role="button" tabindex="0" data-i="${i}">
     <div class="hanger"><div class="tl">${it.example?'<span class="tag ex">Exemple</span>':(it.type?`<span class="tag">${esc(it.type)}</span>`:'')}${(()=>{ const b=[it.signe&&'Signé',(it.version==='Porté'||it.version==='Préparé')&&it.version].filter(Boolean); return b.length?`<div class="badges">${b.map(x=>`<span>${x}</span>`).join('')}</div>`:''; })()}</div>
-      ${it.front?`<img src="${url(it,'front')}" alt="${esc(it.club)}" loading="lazy">`:'<span class="hint">Pas de photo</span>'}
+      ${it.front?`<img src="${url(it,'front')}" alt="${esc(it.club)}" loading="lazy">`:'<span class="hint">Pas de photo</span>'}${it.serie?`<span class="serial">N° ${esc(it.serie)}</span>`:''}
 </div>
     <button class="fav${it.fav?' on':''}" data-fav="${it.id}" aria-label="Favori">★</button>
     <div class="meta"><span class="club">${esc(it.club)}</span>${it.version?`<span class="sub">${esc(it.version)}</span>`:''}<span class="sub"><span>${esc(it.saison||'—')}</span>${it.joueur?`<span>· ${esc(it.joueur)}</span>`:''}</span></div></div>`;
