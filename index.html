@@ -157,7 +157,7 @@ nav.tabs button[aria-selected="true"]::after{content:"";display:block;height:2px
 .ov-actions{display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap}
 .hint{font:600 12px var(--f-num);letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
 .zoom{position:fixed;inset:0;z-index:60;background:#fff;overflow:hidden;touch-action:none;cursor:grab}
-.zoom img{position:absolute;left:0;top:0;max-width:none;transform-origin:0 0;user-select:none;-webkit-user-drag:none;pointer-events:none}
+.zoom img{position:absolute;left:0;top:0;max-width:none;transform-origin:0 0;will-change:transform;backface-visibility:hidden;user-select:none;-webkit-user-drag:none;pointer-events:none}
 .zoom .zbar{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:16px;display:flex;gap:8px;z-index:2}
 .zoom .zhint{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:rgba(0,0,0,.8);color:#eef1f5;padding:6px 12px;border-radius:999px;font:600 12px var(--f-num);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
 .face.f{cursor:zoom-in}
@@ -605,27 +605,50 @@ $('#stage').addEventListener('pointerup',e=>{ if(sx===null) return; const dx=e.c
 $('#flip').addEventListener('click',()=>{ if(!moved) $('#flip').classList.toggle('back'); });
 $('#flip').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault(); $('#flip').classList.toggle('back');} });
 /* zoom : pincer, molette, double-tap, glisser */
-const Z={s:1,x:0,y:0,min:1,pts:new Map(),last:null,tap:0};
+const Z={s:1,x:0,y:0,min:1,pts:new Map(),g:null,tap:0,raf:0,anim:0,vx:0,vy:0,lt:0};
 const zImg=$('#z-img'), zEl=$('#zoom');
-function zApply(){ zImg.style.transform=`translate(${Z.x}px,${Z.y}px) scale(${Z.s})`; }
-function zClamp(){ const W=zEl.clientWidth,H=zEl.clientHeight,w=zImg.naturalWidth*Z.s,h=zImg.naturalHeight*Z.s;
-  Z.x = w<=W ? (W-w)/2 : Math.min(0,Math.max(W-w,Z.x)); Z.y = h<=H ? (H-h)/2 : Math.min(0,Math.max(H-h,Z.y)); }
-function zAt(ns,cx,cy){ ns=Math.max(Z.min,Math.min(Z.min*8,ns)); Z.x=cx-(cx-Z.x)*ns/Z.s; Z.y=cy-(cy-Z.y)*ns/Z.s; Z.s=ns; zClamp(); zApply(); }
-function zFit(){ Z.min=Math.min(zEl.clientWidth/zImg.naturalWidth, zEl.clientHeight/zImg.naturalHeight); Z.s=Z.min; zClamp(); zApply(); }
-function openZoom(blob){ const it=view[cur]; const b=(blob instanceof Blob)?blob:it?.front; if(!b) return; zEl.hidden=false; zImg.onload=zFit; zImg.src=(b===it.front)?url(it,'front'):URL.createObjectURL(b); if(zImg.complete&&zImg.naturalWidth) zFit(); }
+function zApply(){ if(Z.raf) return; Z.raf=requestAnimationFrame(()=>{ Z.raf=0; zImg.style.transform=`translate3d(${Z.x}px,${Z.y}px,0) scale(${Z.s})`; }); }
+function zBounds(s){ const W=zEl.clientWidth,H=zEl.clientHeight,w=zImg.naturalWidth*s,h=zImg.naturalHeight*s;
+  return { x: w<=W ? [(W-w)/2,(W-w)/2] : [W-w,0], y: h<=H ? [(H-h)/2,(H-h)/2] : [H-h,0] }; }
+const clampTo=(v,[lo,hi])=>Math.min(hi,Math.max(lo,v));
+const rubber=(v,[lo,hi])=>v<lo?lo-(lo-v)*.35:v>hi?hi+(v-hi)*.35:v;
+function zClamp(){ const b=zBounds(Z.s); Z.x=clampTo(Z.x,b.x); Z.y=clampTo(Z.y,b.y); }
+function zStop(){ cancelAnimationFrame(Z.anim); Z.anim=0; }
+function zAnimTo(s,x,y,ms=220){ zStop(); const s0=Z.s,x0=Z.x,y0=Z.y,t0=performance.now();
+  const step=t=>{ const k=Math.min(1,(t-t0)/ms), e=1-Math.pow(1-k,3); Z.s=s0+(s-s0)*e; Z.x=x0+(x-x0)*e; Z.y=y0+(y-y0)*e; zApply(); if(k<1) Z.anim=requestAnimationFrame(step); else Z.anim=0; };
+  Z.anim=requestAnimationFrame(step); }
+function zTarget(ns,cx,cy){ ns=Math.max(Z.min,Math.min(Z.min*8,ns)); let x=cx-(cx-Z.x)*ns/Z.s, y=cy-(cy-Z.y)*ns/Z.s; const b=zBounds(ns); return [ns,clampTo(x,b.x),clampTo(y,b.y)]; }
+function zAt(ns,cx,cy,anim){ const [s,x,y]=zTarget(ns,cx,cy); if(anim) zAnimTo(s,x,y); else { zStop(); Z.s=s; Z.x=x; Z.y=y; zApply(); } }
+function zSettle(){ const s=Math.max(Z.min,Math.min(Z.min*8,Z.s)); const cx=zEl.clientWidth/2, cy=zEl.clientHeight/2;
+  let x=Z.x, y=Z.y; if(s!==Z.s){ x=cx-(cx-Z.x)*s/Z.s; y=cy-(cy-Z.y)*s/Z.s; } const b=zBounds(s); zAnimTo(s,clampTo(x,b.x),clampTo(y,b.y)); }
+function zFit(){ zStop(); Z.min=Math.min(zEl.clientWidth/zImg.naturalWidth, zEl.clientHeight/zImg.naturalHeight); Z.s=Z.min; zClamp(); zApply(); }
+function openZoom(blob){ const it=view[cur]; const b=(blob instanceof Blob)?blob:it?.front; if(!b) return; zEl.hidden=false; zImg.decoding='async'; zImg.onload=zFit; zImg.src=(b===it.front)?url(it,'front'):URL.createObjectURL(b); if(zImg.complete&&zImg.naturalWidth) zFit(); }
 $('#c-zoom').onclick=openZoom;
 $('#flip').addEventListener('dblclick',e=>{ e.preventDefault(); openZoom(); });
 $('#z-close').onclick=()=>zEl.hidden=true;
-$('#z-in').onclick=()=>zAt(Z.s*1.6,zEl.clientWidth/2,zEl.clientHeight/2);
-$('#z-out').onclick=()=>zAt(Z.s/1.6,zEl.clientWidth/2,zEl.clientHeight/2);
-zEl.addEventListener('wheel',e=>{ e.preventDefault(); zAt(Z.s*Math.exp(-e.deltaY*0.0015),e.clientX,e.clientY); },{passive:false});
-zEl.addEventListener('pointerdown',e=>{ if(e.target.closest('.zbar')) return; zEl.setPointerCapture(e.pointerId); Z.pts.set(e.pointerId,{x:e.clientX,y:e.clientY}); Z.last=null;
-  if(Z.pts.size===1){ const now=Date.now(); if(now-Z.tap<300){ zAt(Z.s>Z.min*1.2?Z.min:Z.min*3,e.clientX,e.clientY); Z.tap=0; } else Z.tap=now; } });
-zEl.addEventListener('pointermove',e=>{ if(!Z.pts.has(e.pointerId)) return; const prev=Z.pts.get(e.pointerId); Z.pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  if(Z.pts.size===1){ Z.x+=e.clientX-prev.x; Z.y+=e.clientY-prev.y; zClamp(); zApply(); }
-  else if(Z.pts.size===2){ const [a,b]=[...Z.pts.values()]; const d=Math.hypot(a.x-b.x,a.y-b.y), cx=(a.x+b.x)/2, cy=(a.y+b.y)/2;
-    if(Z.last){ Z.x+=cx-Z.last.cx; Z.y+=cy-Z.last.cy; zAt(Z.s*d/Z.last.d,cx,cy); } Z.last={d,cx,cy}; } });
-const zUp=e=>{ Z.pts.delete(e.pointerId); Z.last=null; };
+$('#z-in').onclick=()=>zAt(Z.s*1.6,zEl.clientWidth/2,zEl.clientHeight/2,true);
+$('#z-out').onclick=()=>zAt(Z.s/1.6,zEl.clientWidth/2,zEl.clientHeight/2,true);
+zEl.addEventListener('wheel',e=>{ e.preventDefault(); zAt(Z.s*Math.exp(-e.deltaY*(e.ctrlKey?0.01:0.0015)),e.clientX,e.clientY); },{passive:false});
+function zGestureStart(){ const p=[...Z.pts.values()];
+  if(p.length>=2){ const [a,b]=p, cx=(a.x+b.x)/2, cy=(a.y+b.y)/2; Z.g={type:2,d:Math.hypot(a.x-b.x,a.y-b.y)||1,cx,cy,s:Z.s,x:Z.x,y:Z.y}; }
+  else if(p.length===1){ Z.g={type:1,px:p[0].x,py:p[0].y,x:Z.x,y:Z.y}; Z.vx=Z.vy=0; Z.lt=performance.now(); }
+  else Z.g=null; }
+zEl.addEventListener('pointerdown',e=>{ if(e.target.closest('.zbar')) return; zStop(); zEl.setPointerCapture(e.pointerId); Z.pts.set(e.pointerId,{x:e.clientX,y:e.clientY}); zGestureStart();
+  if(Z.pts.size===1){ const now=Date.now(); if(now-Z.tap<300){ zAt(Z.s>Z.min*1.2?Z.min:Z.min*3,e.clientX,e.clientY,true); Z.tap=0; Z.g=null; } else Z.tap=now; } });
+zEl.addEventListener('pointermove',e=>{ if(!Z.pts.has(e.pointerId)||!Z.g) return; Z.pts.set(e.pointerId,{x:e.clientX,y:e.clientY}); const g=Z.g;
+  if(g.type===1&&Z.pts.size===1){ const now=performance.now(), nx=g.x+e.clientX-g.px, ny=g.y+e.clientY-g.py, dt=Math.max(1,now-Z.lt);
+    Z.vx=.8*((nx-Z.x)/dt)+.2*Z.vx; Z.vy=.8*((ny-Z.y)/dt)+.2*Z.vy; Z.lt=now;
+    const b=zBounds(Z.s); Z.x=rubber(nx,b.x); Z.y=rubber(ny,b.y); zApply(); }
+  else if(g.type===2&&Z.pts.size>=2){ const [a,b]=[...Z.pts.values()]; const d=Math.hypot(a.x-b.x,a.y-b.y), cx=(a.x+b.x)/2, cy=(a.y+b.y)/2;
+    let ns=g.s*d/g.d; const lo=Z.min, hi=Z.min*8; if(ns<lo) ns=lo*Math.pow(ns/lo,.4); if(ns>hi) ns=hi*Math.pow(ns/hi,.4);
+    Z.s=ns; Z.x=cx-(g.cx-g.x)*ns/g.s; Z.y=cy-(g.cy-g.y)*ns/g.s; zApply(); } });
+const zUp=e=>{ if(!Z.pts.has(e.pointerId)) return; const wasPan=Z.g?.type===1; Z.pts.delete(e.pointerId);
+  if(Z.pts.size){ zGestureStart(); return; } Z.g=null;
+  if(wasPan&&performance.now()-Z.lt<80&&Math.hypot(Z.vx,Z.vy)>.25){ let vx=Z.vx*16, vy=Z.vy*16; zStop();
+    const step=()=>{ vx*=.92; vy*=.92; Z.x+=vx; Z.y+=vy; const b=zBounds(Z.s); if(Z.x<b.x[0]||Z.x>b.x[1]) vx*=.5; if(Z.y<b.y[0]||Z.y>b.y[1]) vy*=.5; zApply();
+      if(Math.hypot(vx,vy)>.5) Z.anim=requestAnimationFrame(step); else { Z.anim=0; zSettle(); } };
+    Z.anim=requestAnimationFrame(step); }
+  else zSettle(); };
 zEl.addEventListener('pointerup',zUp); zEl.addEventListener('pointercancel',zUp);
 window.addEventListener('resize',()=>{ if(!zEl.hidden) zFit(); });
 document.addEventListener('keydown',e=>{
