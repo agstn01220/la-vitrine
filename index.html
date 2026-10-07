@@ -249,6 +249,7 @@ nav.tabs button[aria-selected="true"]::after{content:"";display:block;height:2px
 .crow .chev{color:var(--gold);font-size:22px;line-height:1}
 .crow .nm{flex:1;min-width:0;font:800 19px/1.1 var(--f-display);text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .crow .ct{font:600 13px var(--f-num);letter-spacing:.06em;color:var(--muted);text-transform:uppercase;white-space:nowrap}
+.csec{display:flex;align-items:center;gap:10px;margin:22px 2px 8px;font:800 18px var(--f-display);text-transform:uppercase;letter-spacing:.02em;color:var(--muted)}
 .country{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
 .country h3{display:flex;align-items:center;gap:12px;margin:0 0 10px;font:800 22px var(--f-display);text-transform:uppercase}
 .country h3 small{margin-left:auto;font:600 13px var(--f-num);letter-spacing:.06em;color:var(--muted)}
@@ -667,11 +668,13 @@ function renderClubs(){
     return;
   }
   const clubs=[...new Set(items.map(i=>i.club))];
+  const alpha=(a,b)=>a.localeCompare(b,'fr',{sensitivity:'base',numeric:true});
+  const byPays=()=>{ const by=new Map(); clubs.forEach(c=>{ const p=clubPays(c)||'Pays non renseigné'; if(!by.has(p)) by.set(p,[]); by.get(p).push(c); }); return [...by.entries()].sort((a,b)=>(a[0]==='Pays non renseigné')-(b[0]==='Pays non renseigné')||alpha(a[0],b[0])).map(([p,cs])=>[p,cs.sort(alpha)]); };
   const cnt=c=>items.filter(i=>i.club===c).length;
   const clubRow=c=>{ const ys=items.filter(i=>i.club===c).map(i=>yearOf(i.saison)).filter(Boolean), p=clubPays(c);
     return `<button class="crow" data-club="${esc(c)}">${p?flagHTML(p):'<span class="flag"></span>'}<span class="nm">${esc(c)}</span><span class="ct">${cnt(c)} maillot${cnt(c)>1?'s':''}${ys.length?' · '+Math.min(...ys)+(Math.max(...ys)>Math.min(...ys)?'–'+Math.max(...ys):''):''}</span><span class="chev">›</span></button>`; };
   if(CV.country){
-    const cs=clubs.filter(c=>(clubPays(c)||'Pays non renseigné')===CV.country).sort((a,b)=>cnt(b)-cnt(a)||a.localeCompare(b,'fr'));
+    const cs=clubs.filter(c=>(clubPays(c)||'Pays non renseigné')===CV.country).sort(alpha);
     if(!cs.length){ CV.country=null; return renderClubs(); }
     const n=cs.reduce((s,c)=>s+cnt(c),0);
     el.innerHTML=`<button class="back-link" id="cv-back">← Pays</button>
@@ -685,13 +688,12 @@ function renderClubs(){
   let body='';
   if(!clubs.length) body='<div class="empty"><h2>Aucun club</h2><p>Ajoute un maillot pour voir tes clubs ici.</p></div>';
   else if(CV.mode==='pays'){
-    const by=new Map(); clubs.forEach(c=>{ const p=clubPays(c)||'Pays non renseigné'; if(!by.has(p)) by.set(p,[]); by.get(p).push(c); });
-    body='<div class="clist">'+[...by.entries()].sort((a,b)=>b[1].length-a[1].length||a[0].localeCompare(b[0],'fr')).map(([p,cs])=>{
+    body='<div class="clist">'+byPays().map(([p,cs])=>{
       const n=cs.reduce((s,c)=>s+cnt(c),0);
       return `<button class="crow" data-country="${esc(p)}">${flagHTML(p)}<span class="nm">${esc(p)}</span><span class="ct">${cs.length} club${cs.length>1?'s':''} · ${n} maillot${n>1?'s':''}</span><span class="chev">›</span></button>`;
     }).join('')+'</div>';
   } else {
-    body='<div class="clist">'+clubs.sort((a,b)=>cnt(b)-cnt(a)||a.localeCompare(b,'fr')).map(clubRow).join('')+'</div>';
+    body=byPays().map(([p,cs])=>`<h3 class="csec">${flagHTML(p)}<span>${esc(p)}</span></h3><div class="clist">${cs.map(clubRow).join('')}</div>`).join('');
   }
   el.innerHTML=`<div class="seg" role="group" aria-label="Affichage"><button data-m="pays" aria-pressed="${CV.mode==='pays'}">Par pays</button><button data-m="club" aria-pressed="${CV.mode==='club'}">Par club</button></div>${body}`;
   el.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{ CV.mode=b.dataset.m; CV.country=null; LS.set('vx_cmode',CV.mode); renderClubs(); });
