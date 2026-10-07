@@ -489,7 +489,7 @@ function applyFilters(){
   view.sort((a,b)=> s==='club'?a.club.localeCompare(b.club,'fr') : s==='prix-desc'?(b.prix||0)-(a.prix||0) : s==='saison-desc'?(yearOf(b.saison)||0)-(yearOf(a.saison)||0) : s==='saison-asc'?(yearOf(a.saison)||9999)-(yearOf(b.saison)||9999) : b.createdAt-a.createdAt);
 }
 const cardHTML=(it,i)=>`<div class="card" role="button" tabindex="0" data-i="${i}">
-    <div class="hanger"><div class="tl">${it.example?'<span class="tag ex">Exemple</span>':(it.type?`<span class="tag">${esc(it.type)}</span>`:'')}${(it.signe||it.patch)?`<div class="badges">${it.signe?'<span>Signé</span>':''}${it.patch?'<span>Patch</span>':''}</div>`:''}</div>
+    <div class="hanger"><div class="tl">${it.example?'<span class="tag ex">Exemple</span>':(it.type?`<span class="tag">${esc(it.type)}</span>`:'')}${(()=>{ const b=[it.signe&&'Signé',(it.version==='Porté'||it.version==='Préparé')&&it.version].filter(Boolean); return b.length?`<div class="badges">${b.map(x=>`<span>${x}</span>`).join('')}</div>`:''; })()}</div>
       ${it.front?`<img src="${url(it,'front')}" alt="${esc(it.club)}" loading="lazy">`:'<span class="hint">Pas de photo</span>'}
 </div>
     <button class="fav${it.fav?' on':''}" data-fav="${it.id}" aria-label="Favori">★</button>
