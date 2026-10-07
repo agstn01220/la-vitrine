@@ -306,10 +306,10 @@ nav.tabs button[aria-selected="true"]::after{content:"";display:block;height:2px
         <input id="imp" type="file" accept=".zip,application/zip" hidden>
       </div>
       <div class="panel">
-        <h3>Google Drive</h3>
-        <p>L'envoi direct vers Drive n'est pas possible depuis cette page. Sur téléphone, le bouton de sauvegarde ouvre le menu de partage : choisis Drive. Sur ordinateur, glisse le .zip dans Drive.</p>
+        <h3>Passer du Mac à l'iPhone</h3>
+        <p>Exporte le .zip sur un appareil et enregistre-le dans iCloud Drive. Sur l'autre appareil, appuie sur « Choisir un fichier .zip » et sélectionne-le dans iCloud Drive.</p>
       </div>
-            <div class="panel" id="gh-panel">
+            <div class="panel" id="gh-panel" hidden>
         <h3>Synchronisation GitHub</h3>
         <p>Ta collection est enregistrée dans ton dépôt GitHub privé, et ton iPhone et ton Mac restent à jour automatiquement.</p>
         <div id="gh-form" class="gh-form">
@@ -910,7 +910,7 @@ $('#btn-clear-ex').onclick=async()=>{ for(const i of items.filter(i=>i.example))
 
 /* ---------- synchro GitHub (dépôt privé) ---------- */
 const GH={
-  get cfg(){ try{ return JSON.parse(LS.get('vx_gh')||'null'); }catch(e){ return null; } },
+  get cfg(){ return null; },
   set cfg(v){ LS.set('vx_gh', v?JSON.stringify(v):''); },
   busy:false, again:false, timer:null, branch:null
 };
@@ -1008,7 +1008,8 @@ window.__sync=()=>scheduleSync();
     for(const i of items.filter(i=>i.example)) await DB.del(i.id);
     await seed(); items = await DB.all();
   }
-  render(); renderGhPanel(); if(GH.cfg) syncNow();
+  try{ localStorage.removeItem('vx_gh'); }catch(e){}
+  render(); renderGhPanel();
   const t=LS.get('vx_tab'); if(t&&t!=='gallery') document.querySelector(`nav.tabs [data-v="${t}"]`)?.click();
 })();
 })();
