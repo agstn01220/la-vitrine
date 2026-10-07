@@ -53,6 +53,18 @@ header.top{display:flex;align-items:center;justify-content:space-between;gap:12p
 .logo{width:52px;height:52px;border-radius:12px;box-shadow:0 6px 16px rgba(0,0,0,.45)}
 .brand{font-family:var(--f-display);font-weight:900;font-size:clamp(30px,8vw,46px);line-height:.9;letter-spacing:.01em;text-transform:uppercase}
 .brand small{display:block;font:600 12px/1 var(--f-num);letter-spacing:.18em;color:var(--gold);margin-bottom:6px}
+.top-r{display:flex;align-items:center;gap:14px}
+.gear{color:var(--fg)}
+.mg-wrap{max-width:640px;margin:0 auto;padding-bottom:40px}
+.mg-help{color:var(--muted);font-size:14px;margin:14px 16px}
+.mg-tabs{display:flex;gap:8px;overflow-x:auto;padding:0 16px 12px;scrollbar-width:none}
+.mg-tabs .chip[aria-pressed="true"]{background:var(--gold-metal);background-size:200% 100%;border-color:transparent;color:var(--gold-ink)}
+.mg-q{display:block;width:calc(100% - 32px);margin:0 16px 8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.mg-list{list-style:none;margin:0;padding:0}
+.mg-list li{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.mg-list .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.mg-list .ct{color:var(--muted);font:600 13px var(--f-num);white-space:nowrap}
+.mg-list .empty{color:var(--muted);justify-content:center}
 .count{font:700 13px var(--f-num);letter-spacing:.1em;color:var(--muted);text-transform:uppercase;text-align:right}
 .count b{display:block;font:900 30px/1 var(--f-display);color:var(--fg)}
 .banner{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--panel-2);border:1px solid #c99a2e;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:14px}
@@ -263,7 +275,7 @@ nav.tabs button[aria-selected="true"]::after{content:"";display:block;height:2px
 <div class="wrap">
   <header class="top">
     <div class="brand-wrap"><img class="logo" src="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%237a5a14%27/%3E%3Cstop%20offset%3D%27.3%27%20stop-color%3D%27%23f7e08c%27/%3E%3Cstop%20offset%3D%27.4%27%20stop-color%3D%27%23fff6cf%27/%3E%3Cstop%20offset%3D%27.55%27%20stop-color%3D%27%23c99a2e%27/%3E%3Cstop%20offset%3D%27.8%27%20stop-color%3D%27%23f2d47a%27/%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%238f6a1a%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width%3D%27100%27%20height%3D%27100%27%20rx%3D%2722%27%20fill%3D%27%23000%27/%3E%3Crect%20x%3D%2716%27%20y%3D%2714%27%20width%3D%2768%27%20height%3D%2772%27%20rx%3D%274%27%20fill%3D%27%23fff%27%20stroke%3D%27url%28%23g%29%27%20stroke-width%3D%274%27/%3E%3Cg%20transform%3D%27translate%280%2C-2%29%27%3E%3Cpath%20d%3D%27M39%2025L28%2029L20%2044L28.5%2049L33%2043L33%2080L67%2080L67%2043L71.5%2049L80%2044L72%2029L61%2025Z%27%20fill%3D%27%232453c4%27/%3E%3Cpath%20d%3D%27M40.5%2026Q35%2033%2033%2043%27%20fill%3D%27none%27%20stroke%3D%27%23fff%27%20stroke-width%3D%271.4%27/%3E%3Cpath%20d%3D%27M42%2026.5Q36.7%2033.5%2034.6%2043%27%20fill%3D%27none%27%20stroke%3D%27%23e8323c%27%20stroke-width%3D%27.8%27/%3E%3Cpath%20d%3D%27M59.5%2026Q65%2033%2067%2043%27%20fill%3D%27none%27%20stroke%3D%27%23fff%27%20stroke-width%3D%271.4%27/%3E%3Cpath%20d%3D%27M58%2026.5Q63.3%2033.5%2065.4%2043%27%20fill%3D%27none%27%20stroke%3D%27%23e8323c%27%20stroke-width%3D%27.8%27/%3E%3Cpath%20d%3D%27M20%2044L28.5%2049L30%2046L21.6%2041Z%27%20fill%3D%27%23fff%27/%3E%3Cpath%20d%3D%27M20.8%2042.5L29.2%2047.5%27%20stroke%3D%27%23e8323c%27%20stroke-width%3D%27.8%27/%3E%3Cpath%20d%3D%27M80%2044L71.5%2049L70%2046L78.4%2041Z%27%20fill%3D%27%23fff%27/%3E%3Cpath%20d%3D%27M79.2%2042.5L70.8%2047.5%27%20stroke%3D%27%23e8323c%27%20stroke-width%3D%27.8%27/%3E%3Cpath%20d%3D%27M39%2025L50%2037L61%2025L57.5%2024L50%2032.5L42.5%2024Z%27%20fill%3D%27%23fff%27/%3E%3Cpath%20d%3D%27M40.5%2024.4L44%2028.3%27%20stroke%3D%27%23e8323c%27%20stroke-width%3D%27.9%27/%3E%3Cpath%20d%3D%27M59.5%2024.4L56%2028.3%27%20stroke%3D%27%23e8323c%27%20stroke-width%3D%27.9%27/%3E%3Crect%20x%3D%2736%27%20y%3D%2748%27%20width%3D%2728%27%20height%3D%273%27%20fill%3D%27%23e8323c%27/%3E%3Crect%20x%3D%2736%27%20y%3D%2754%27%20width%3D%2728%27%20height%3D%271.2%27%20fill%3D%27%23fff%27/%3E%3Crect%20x%3D%2736%27%20y%3D%2758.5%27%20width%3D%2728%27%20height%3D%271.2%27%20fill%3D%27%23fff%27/%3E%3Crect%20x%3D%2736%27%20y%3D%2763%27%20width%3D%2728%27%20height%3D%271.2%27%20fill%3D%27%23fff%27/%3E%3C/g%3E%3C/svg%3E" alt=""><div class="brand">La Vitrine</div></div>
-    <div class="count"><b id="cnt">0</b>maillots<span id="sync-state" class="sync-state"></span></div>
+    <div class="top-r"><button type="button" class="icon gear" id="open-manage" aria-label="Gérer les noms"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg></button><div class="count"><b id="cnt">0</b>maillots<span id="sync-state" class="sync-state"></span></div></div>
   </header>
   <div id="reminder" class="banner" hidden></div>
 
@@ -364,6 +376,16 @@ nav.tabs button[aria-selected="true"]::after{content:"";display:block;height:2px
 </div>
 
 <div id="zoom" class="zoom" hidden><img id="z-img" alt=""><div class="zbar"><button class="icon" id="z-out" aria-label="Dézoomer">−</button><button class="icon" id="z-in" aria-label="Zoomer">+</button><button class="icon" id="z-close" aria-label="Fermer le zoom">✕</button></div><span class="zhint">Pince ou double-tape pour zoomer</span></div>
+
+<div id="manage" class="page" hidden>
+  <div class="mg-wrap">
+    <header class="pg-head"><button type="button" class="pg-back" id="m-back" aria-label="Retour">←</button><h2>Gérer les noms</h2><span></span></header>
+    <p class="mg-help">Choisis une liste, puis touche « Renommer ». Le nouveau nom s'applique à tous les maillots concernés. Si tu choisis un nom qui existe déjà, les deux sont fusionnés.</p>
+    <div class="mg-tabs" id="mg-tabs"></div>
+    <input type="search" id="mg-q" class="mg-q" placeholder="Rechercher…">
+    <ul class="mg-list" id="mg-list"></ul>
+  </div>
+</div>
 
 <div id="editor" class="page" hidden>
   <form id="form" novalidate>
@@ -834,6 +856,29 @@ document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>{
 });
 $('#q').oninput=e=>{F.q=e.target.value; render();};
 document.addEventListener('change',e=>{ if(e.target.matches('select')&&!e.target.closest('.mf')) e.target.blur(); });
+/* ---------- gérer les noms ---------- */
+const MG=[['club','Équipes'],['marque','Marques'],['pays','Pays'],['saison','Saisons'],['fab','Pays de fabrication'],['provenance','Provenance']];
+let mgF='club';
+function renderManage(){
+  $('#mg-tabs').innerHTML=MG.map(([f,l])=>`<button type="button" class="chip" data-f="${f}" aria-pressed="${f===mgF}">${l}</button>`).join('');
+  const q=norm($('#mg-q').value), m=new Map();
+  items.forEach(it=>{ const v=String(it[mgF]||'').trim(); if(v) m.set(v,(m.get(v)||0)+1); });
+  const rows=[...m].filter(([v])=>!q||norm(v).includes(q)).sort((a,b)=>a[0].localeCompare(b[0],'fr',{numeric:true}));
+  $('#mg-list').innerHTML=rows.length?rows.map(([v,n])=>`<li>${(mgF==='pays'||mgF==='fab')?flagHTML(v):''}<span class="nm">${esc(v)}</span><span class="ct">${n} maillot${n>1?'s':''}</span><button type="button" class="btn small" data-ren="${esc(v)}">Renommer</button></li>`).join(''):'<li class="empty">Rien pour l\'instant.</li>';
+}
+$('#open-manage').onclick=()=>{ $('#mg-q').value=''; renderManage(); $('#manage').hidden=false; document.body.style.overflow='hidden'; };
+$('#m-back').onclick=()=>{ $('#manage').hidden=true; document.body.style.overflow=''; };
+$('#mg-tabs').onclick=e=>{ const b=e.target.closest('[data-f]'); if(!b) return; mgF=b.dataset.f; $('#mg-q').value=''; renderManage(); };
+$('#mg-q').oninput=renderManage;
+$('#mg-list').onclick=async e=>{
+  const b=e.target.closest('[data-ren]'); if(!b) return;
+  const old=b.dataset.ren, nv=(prompt(`Nouveau nom pour « ${old} »`,old)||'').trim();
+  if(!nv||nv===old) return;
+  const hit=items.filter(it=>String(it[mgF]||'').trim()===old);
+  for(const it of hit){ it[mgF]=nv; await DB.put(it); }
+  items=await DB.all(); render(); renderManage();
+  toast(`${hit.length} maillot${hit.length>1?'s':''} mis à jour`);
+};
 $('#f-fav').onclick=e=>{F.fav=!F.fav; e.currentTarget.setAttribute('aria-pressed',F.fav); render();};
 [['f-type','type'],['f-club','club'],['f-marque','marque'],['f-saison','saison'],['sort','sort']].forEach(([id,k])=>$('#'+id).onchange=e=>{F[k]=e.target.value; render();});
 
