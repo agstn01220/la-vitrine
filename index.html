@@ -376,6 +376,7 @@ nav.tabs button[aria-selected="true"]::after{content:"";display:block;height:2px
       <label>Équipe *<div class="combo" data-f="club" data-ph="Équipe"></div></label>
       <label>Pays de l'équipe<div class="combo" data-f="pays" data-ph="Pays"></div></label>
       <label>Saison *<div class="combo" data-f="saison" data-ph="Saison"></div></label>
+      <label>N° de série<input id="i-serie" placeholder="Ex: FRA-PSG-001" autocapitalize="characters"></label>
       <label>Marque *<div class="combo" data-f="marque" data-ph="Marque"></div></label>
       <label>Type *<select id="i-type" required><option value="" disabled selected hidden>Type</option><option>Domicile</option><option>Extérieur</option><option>Third</option><option>Fourth</option><option>Entraînement</option><option>Pré-match</option><option>Spécial</option></select></label>
       <label>Style<select id="i-style"><option>Joueur</option><option>Gardien</option></select></label>
@@ -483,7 +484,7 @@ function fillSelect(sel, label, values, curVal){
 function applyFilters(){
   const q=F.q.toLowerCase();
   view = items.filter(it=>(!F.fav||it.fav)&&(!F.type||it.type===F.type)&&(!F.club||it.club===F.club)&&(!F.marque||it.marque===F.marque)&&(!F.saison||it.saison===F.saison)
-    &&(!q||[it.club,it.pays,it.joueur,it.saison,it.numero,it.provenance,it.version,it.marque,it.code,it.desc,it.fab].join(' ').toLowerCase().includes(q)));
+    &&(!q||[it.club,it.pays,it.joueur,it.saison,it.numero,it.provenance,it.version,it.marque,it.code,it.serie,it.desc,it.fab].join(' ').toLowerCase().includes(q)));
   const s=F.sort;
   view.sort((a,b)=> s==='club'?a.club.localeCompare(b.club,'fr') : s==='prix-desc'?(b.prix||0)-(a.prix||0) : s==='saison-desc'?(yearOf(b.saison)||0)-(yearOf(a.saison)||0) : s==='saison-asc'?(yearOf(a.saison)||9999)-(yearOf(b.saison)||9999) : b.createdAt-a.createdAt);
 }
@@ -552,7 +553,7 @@ function showCur(){
   $('#c-front').src = url(it,'front'); $('#c-front').alt = it.club+' recto';
   $('#c-backface').innerHTML = `<div class="fiche"><span class="hint">${esc(it.saison||'')} · ${esc(it.type||'')}</span><b>${esc(it.numero||'—')}</b>${esc(it.joueur||'Sans flocage')}<br><span class="hint">${esc(it.club)}</span></div>`;
   $('#pos').textContent = `${cur+1} / ${view.length} · Touche la photo pour voir la fiche`;
-  const facts=[['Version',it.version],['Signé',it.signe?'Oui':''],['Patch',it.patch?'Oui':''],['Taille',it.taille],['État',it.etat],['Prix',it.prix?eur(+it.prix):''],['Valeur estimée',it.valeur?eur(+it.valeur):''],['Provenance',it.provenance]].filter(f=>f[1]);
+  const facts=[['N° de série',it.serie],['Version',it.version],['Signé',it.signe?'Oui':''],['Patch',it.patch?'Oui':''],['Taille',it.taille],['État',it.etat],['Prix',it.prix?eur(+it.prix):''],['Valeur estimée',it.valeur?eur(+it.valeur):''],['Provenance',it.provenance]].filter(f=>f[1]);
   $('#c-details').innerHTML=`<h2>${it.pays?flagHTML(it.pays)+' ':''}${esc(it.club)}</h2>
     <div class="sub">${[it.saison,it.type,it.marque,it.joueur&&(it.joueur+(it.numero?' #'+it.numero:''))].filter(Boolean).map(esc).join(' · ')}</div>
     <div class="facts">${facts.map(f=>`<span>${f[0]} <b>${esc(f[1])}</b></span>`).join('')}</div>
@@ -713,7 +714,7 @@ async function exportPDF(){
     doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(60);
     const lines=[[it.saison,it.type].filter(Boolean).join(' · '),[it.marque,it.version].filter(Boolean).join(' · '),
       (it.joueur||it.numero)?`${it.joueur||''}${it.numero?' #'+it.numero:''}`:'',[it.taille&&'Taille '+it.taille,it.etat].filter(Boolean).join(' · '),
-      [it.signe&&'Signé',it.patch&&'Patch'].filter(Boolean).join(' · '),it.code?'Code : '+it.code:'',it.fab?'Fabriqué : '+it.fab:'',
+      [it.signe&&'Signé',it.patch&&'Patch'].filter(Boolean).join(' · '),it.serie?'N° de série : '+it.serie:'',it.code?'Code : '+it.code:'',it.fab?'Fabriqué : '+it.fab:'',
       it.prix?"Achat : "+e2(it.prix)+(it.date?' ('+new Date(it.date).toLocaleDateString('fr-FR')+')':''):'',it.valeur?'Valeur estimée : '+e2(it.valeur):''].filter(Boolean);
     for(const l of lines){ const sp=doc.splitTextToSize(l,tw); if(ty+sp.length*3.8>y0+ch-6) break; doc.text(sp,tx,ty); ty+=sp.length*3.8+.6; }
   }
@@ -730,7 +731,7 @@ $('#grid').addEventListener('click',async e=>{
 $('#grid').addEventListener('keydown',e=>{ const c=e.target.closest('.card'); if(c&&(e.key==='Enter'||e.key===' ')&&!e.target.closest('[data-fav]')){e.preventDefault(); openCarousel(+c.dataset.i);} });
 
 /* ---------- éditeur (fiche Nouveau maillot) ---------- */
-const TXT=['joueur','numero','code','prix','valeur','date','prov','desc','note'], SEL=['type','style','version','taille','modele','manches','etat'];
+const TXT=['serie','joueur','numero','code','prix','valeur','date','prov','desc','note'], SEL=['type','style','version','taille','modele','manches','etat'];
 const KEY={prov:'provenance'}; const key=f=>KEY[f]||f;
 const FAB=['Bangladesh','Cambodge','Chine','Égypte','France','Allemagne','Guatemala','Honduras','Inde','Indonésie','Italie','Japon','Jordanie','Malaisie','Maroc','Mexique','Pakistan','Philippines','Portugal','Royaume-Uni','Salvador','Sri Lanka','Taïwan','Thaïlande','Tunisie','Turquie','Vietnam','Espagne','Brésil','Argentine','Corée du Sud'].sort((a,b)=>a.localeCompare(b,'fr'));
 const COMBO={club:'Équipe',pays:'Pays de l\'équipe',saison:'Saison',marque:'Marque',fab:'Pays de fabrication'};
