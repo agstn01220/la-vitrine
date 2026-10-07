@@ -77,9 +77,10 @@ header.top{display:flex;align-items:center;justify-content:space-between;gap:12p
 .meta .club{font:800 18px/1.05 var(--f-display);text-transform:uppercase;letter-spacing:.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .meta .sub{font:600 13px var(--f-num);color:var(--muted);letter-spacing:.05em;text-transform:uppercase;display:flex;gap:6px;flex-wrap:wrap}
 .num{position:absolute;right:10px;bottom:10px;font:900 30px/1 var(--f-display);color:var(--fg);opacity:.9;text-shadow:0 2px 8px rgba(0,0,0,.6)}
-.fav{position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:50%;border:none;background:rgba(0,0,0,.6);color:var(--muted);font-size:17px;line-height:32px}
+.fav{position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:50%;border:none;background:rgba(0,0,0,.6);color:var(--muted);font-size:17px;line-height:1;padding:0;display:grid;place-items:center}
 .fav.on{color:var(--gold)}
-.tag{position:absolute;top:8px;left:8px;font:700 11px var(--f-num);letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:rgba(0,0,0,.85);color:#c9d0da}
+.tl{position:absolute;top:8px;left:8px;right:46px;display:flex;flex-wrap:wrap;gap:4px;align-items:center;z-index:1}
+.tag{font:700 11px var(--f-num);letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:rgba(0,0,0,.85);color:#c9d0da}
 .tag.ex{color:var(--gold)}
 .empty{text-align:center;padding:60px 16px;color:var(--muted)}
 .empty h2{font:900 30px var(--f-display);color:var(--fg);text-transform:uppercase;margin:0 0 8px}
@@ -163,8 +164,8 @@ nav.tabs button[aria-selected="true"]::after{content:"";display:block;height:2px
 .checks{display:flex;gap:16px;align-items:flex-end;padding-bottom:10px}
 .form label.ck{flex-direction:row;align-items:center;gap:8px;font-size:14px;color:var(--fg);cursor:pointer}
 .form label.ck input{width:20px;height:20px;accent-color:var(--gold)}
-.badges{position:absolute;bottom:8px;left:8px;display:flex;gap:4px}
-.badges span{font:700 10px var(--f-num);letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:4px;background:var(--gold-metal);background-size:200% 100%;color:var(--gold-ink)}
+.badges{display:flex;gap:4px}
+.badges span{font:700 11px var(--f-num);letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border-radius:4px;background:var(--gold-metal);background-size:200% 100%;color:var(--gold-ink)}
 .form-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
 .confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;margin-top:8px;font-size:14px}
 .toast{position:fixed;left:50%;bottom:calc(140px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:80;background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:999px;font:600 14px var(--f-body);box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:calc(100vw - 32px);text-align:center}
@@ -488,7 +489,7 @@ function applyFilters(){
   view.sort((a,b)=> s==='club'?a.club.localeCompare(b.club,'fr') : s==='prix-desc'?(b.prix||0)-(a.prix||0) : s==='saison-desc'?(yearOf(b.saison)||0)-(yearOf(a.saison)||0) : s==='saison-asc'?(yearOf(a.saison)||9999)-(yearOf(b.saison)||9999) : b.createdAt-a.createdAt);
 }
 const cardHTML=(it,i)=>`<div class="card" role="button" tabindex="0" data-i="${i}">
-    <div class="hanger">${it.example?'<span class="tag ex">Exemple</span>':`<span class="tag">${esc(it.type||'')}</span>`}${(it.signe||it.patch)?`<div class="badges">${it.signe?'<span>Signé</span>':''}${it.patch?'<span>Patch</span>':''}</div>`:''}
+    <div class="hanger"><div class="tl">${it.example?'<span class="tag ex">Exemple</span>':(it.type?`<span class="tag">${esc(it.type)}</span>`:'')}${(it.signe||it.patch)?`<div class="badges">${it.signe?'<span>Signé</span>':''}${it.patch?'<span>Patch</span>':''}</div>`:''}</div>
       ${it.front?`<img src="${url(it,'front')}" alt="${esc(it.club)}" loading="lazy">`:'<span class="hint">Pas de photo</span>'}
 </div>
     <button class="fav${it.fav?' on':''}" data-fav="${it.id}" aria-label="Favori">★</button>
