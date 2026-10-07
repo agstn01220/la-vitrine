@@ -147,6 +147,8 @@ nav.tabs button[aria-selected="true"]::after{content:"";display:block;height:2px
 .nav-arrow{flex:0 0 auto}
 @media(max-width:600px){.nav-arrow{display:none}}
 .details{max-width:520px;width:100%;margin:10px auto 0;text-align:center}
+.d-head{display:flex;align-items:center;justify-content:center;gap:12px}
+.d-head h2,.club-head h2{text-box:trim-both cap alphabetic}
 .details h2{margin:0;font:900 clamp(26px,7vw,38px)/1 var(--f-display);text-transform:uppercase;text-wrap:balance}
 .details .sub{font:600 14px var(--f-num);letter-spacing:.08em;color:var(--gold);text-transform:uppercase;margin:4px 0 8px}
 .facts{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;font-size:14px;color:var(--muted)}
@@ -580,7 +582,7 @@ function showCur(){
   $('#c-backface').innerHTML = `<div class="fiche"><span class="hint">${esc(it.saison||'')} · ${esc(it.type||'')}</span><b>${esc(it.numero||'—')}</b>${esc(it.joueur||'Sans flocage')}<br><span class="hint">${esc(it.club)}</span></div>`;
   $('#pos').textContent = `${cur+1} / ${view.length} · Touche la photo pour voir la fiche`;
   const facts=[['N° de série',it.serie],['Version',it.version],['Signé',it.signe?'Oui':''],['Patch',it.patch?'Oui':''],['Taille',it.taille],['État',it.etat],['Prix',it.prix?eur(+it.prix):''],['Valeur estimée',it.valeur?eur(+it.valeur):''],['Provenance',it.provenance]].filter(f=>f[1]);
-  $('#c-details').innerHTML=`<h2>${it.pays?flagHTML(it.pays)+' ':''}${esc(it.club)}</h2>
+  $('#c-details').innerHTML=`<div class="d-head">${it.pays?flagHTML(it.pays):''}<h2>${esc(it.club)}</h2></div>
     <div class="sub">${[it.saison,it.type,it.marque,it.joueur&&(it.joueur+(it.numero?' #'+it.numero:''))].filter(Boolean).map(esc).join(' · ')}</div>
     <div class="facts">${facts.map(f=>`<span>${f[0]} <b>${esc(f[1])}</b></span>`).join('')}</div>
     ${it.more?.length?`<div class="thumbs">${[it.front,...it.more].map((b,i)=>`<button type="button" data-ph="${i}" aria-label="Photo ${i+1}"><img src="${URL.createObjectURL(b)}" alt=""></button>`).join('')}</div>`:''}
